@@ -2,19 +2,21 @@ package org.example.simpleapi.config;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
-@Getter
+@Profile("test")
 @Configuration
+@Getter
 @Log4j2
-public class JdbcConfig {
+public class H2TestConfig {
     @Value("${spring.datasource.driverClassName}")
     private String jdbcDriver;
 
@@ -27,13 +29,14 @@ public class JdbcConfig {
     @Value("${spring.datasource.password}")
     private String jdbcPassword;
 
-    public JdbcConfig() {
-        log.info("Default config loaded. class={}", this.getClass().getName());
+    public H2TestConfig() {
+        log.info("Test config loaded. class={}", this.getClass().getName());
     }
 
     @Bean
-    public DataSource jdbcDataSource() {
-        log.info("Default property loaded. [jdbcDriver={}, jdbcUrl={}, jdbcUser={}, jdbcPass={}]",
+    @Profile("test")
+    public DataSource jdbcDataSourceTest() {
+        log.info("Test property loaded. jdbcDriver={}, jdbcUrl={}, jdbcUser={}, jdbcPass={}",
                 getJdbcDriver(), getJdbcUrl(), getJdbcUserName(), getJdbcPassword().substring(0, 2) + "XXXX");
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         driverManagerDataSource.setDriverClassName(getJdbcDriver());
@@ -43,16 +46,9 @@ public class JdbcConfig {
         return driverManagerDataSource;
     }
 
-    @Bean
-    @Primary
+    @Bean("jdbcTestTemplate")
+    @Profile("test")
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(jdbcDataSource());
+        return new JdbcTemplate(jdbcDataSourceTest());
     }
-
-    @Bean
-    @Primary
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(jdbcDataSource());
-    }
-
 }

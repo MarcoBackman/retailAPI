@@ -5,11 +5,12 @@ import org.example.simpleapi.util.DateUtil;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class TransactionRowMapper implements RowMapper<Transaction> {
+public class TransactionRowMapper implements RowMapper<Transaction>, Serializable {
     @Override
     public Transaction mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Transaction.builder()

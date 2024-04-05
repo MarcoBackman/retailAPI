@@ -9,15 +9,15 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 //Todo: Migrate this into ORM tool(Hibernate, Jooq) for type safe programming
 @Repository
 @Log4j2
 public class CustomerDAOImpl extends AbstractCommonDAO<Customer> implements RecordDAO<Customer> {
     public CustomerDAOImpl(JdbcTemplate jdbcTemplate,
-                           NamedParameterJdbcTemplate namedParameterJdbcTemplate,
                            CustomerRowMapper customerRowMapper) {
-        super(jdbcTemplate, namedParameterJdbcTemplate, customerRowMapper);
+        super(jdbcTemplate, customerRowMapper);
     }
 
     @Override
@@ -48,5 +48,10 @@ public class CustomerDAOImpl extends AbstractCommonDAO<Customer> implements Reco
                 customer.getCustomerId());
         log.debug(mk, "affected rows={}", result);
         return result;
+    }
+
+    public Stream<Integer> getAllCustomersId(Marker mk) {
+        String query = "SELECT CUSTOMER_ID FROM CUSTOMER";
+        return jdbcTemplate.queryForStream(query, (rs, rowNum) -> rs.getInt(0));
     }
 }
