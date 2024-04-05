@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 public class RewardServiceTest {
@@ -111,8 +112,7 @@ public class RewardServiceTest {
     }
 
     @Test
-    public void rewardService_getter_executionTest() {
-        //Expects 96
+    public void rewardService_getter_allThreeMonths_executionTest() {
         Stream<Transaction> lastMonthTransactionStream
                 = Stream.of(Transaction.builder().tranAmount(new BigDecimal("123.523")).build());
 
@@ -143,5 +143,66 @@ public class RewardServiceTest {
         verify(rewardDataSpy, times(1)).setLastThreeMonthsTotalRewards();
 
         assertThat(rewardDataSpy.getTotalThreeMonthsRewards()).isEqualByComparingTo(BigDecimal.valueOf(2181));
+    }
+
+    @Test
+    public void rewardService_getter_noTransaction_onLastSecondMonth_executionTest() {
+        Stream<Transaction> lastMonthTransactionStream
+                = Stream.of(Transaction.builder().tranAmount(new BigDecimal("123.523")).build());
+
+        Stream<Transaction> lastSecondMonthTransactionStream
+                = Stream.empty();
+
+        Stream<Transaction> lastThirdMonthTransactionStream
+                = Stream.of(Transaction.builder().tranAmount(new BigDecimal("23.523")).build(),
+                Transaction.builder().tranAmount(new BigDecimal("663.523")).build());
+
+        RewardData rewardDataSpy = spy(new RewardData(TEST_CUSTOMER_ID));
+
+        doReturn(lastMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
+        doReturn(lastSecondMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
+        doReturn(lastThirdMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
+
+        rewardServiceSpy.getCustomerRewards(mk, TEST_CUSTOMER_ID, rewardDataSpy);
+
+        verify(rewardDataSpy, times(1)).addPreviousMonthReward(BigDecimal.valueOf(96));
+        verify(rewardDataSpy, times(0)).addLastSecondMonthReward(any());
+        verify(rewardDataSpy, times(1)).addLastThirdMonthReward(BigDecimal.ZERO);
+        verify(rewardDataSpy, times(1)).addLastThirdMonthReward(BigDecimal.valueOf(1176));
+        verify(rewardDataSpy, times(1)).setLastThreeMonthsTotalRewards();
+
+        assertThat(rewardDataSpy.getTotalThreeMonthsRewards()).isEqualByComparingTo(BigDecimal.valueOf(1272));
+    }
+
+    @Test
+    public void rewardService_getter_noTransactionAtAll_executionTest() {
+        Stream<Transaction> lastMonthTransactionStream
+                = Stream.empty();
+
+        Stream<Transaction> lastSecondMonthTransactionStream
+                = Stream.empty();
+
+        Stream<Transaction> lastThirdMonthTransactionStream
+                = Stream.empty();
+
+        RewardData rewardDataSpy = spy(new RewardData(TEST_CUSTOMER_ID));
+
+        doReturn(lastMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
+        doReturn(lastSecondMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
+        doReturn(lastThirdMonthTransactionStream).when(transactionDAO)
+                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
+
+        rewardServiceSpy.getCustomerRewards(mk, TEST_CUSTOMER_ID, rewardDataSpy);
+
+        verify(rewardDataSpy, times(0)).addPreviousMonthReward(any());
+        verify(rewardDataSpy, times(0)).addLastSecondMonthReward(any());
+        verify(rewardDataSpy, times(0)).addLastThirdMonthReward(any());
+
+        assertThat(rewardDataSpy.getTotalThreeMonthsRewards()).isEqualByComparingTo(BigDecimal.valueOf(0));
     }
 }
