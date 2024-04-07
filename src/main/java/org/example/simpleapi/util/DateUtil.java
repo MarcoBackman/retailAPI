@@ -1,5 +1,6 @@
 package org.example.simpleapi.util;
 
+import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -31,5 +32,16 @@ public class DateUtil {
     public static LocalDate getLocalDateFromOffsetDateTime(OffsetDateTime offsetDateTime) {
         ZonedDateTime zoned = offsetDateTime.atZoneSameInstant(easternZone);
         return zoned.toLocalDate();
+    }
+
+    public static Timestamp convertOffsetDateTimeToTimeStamp(OffsetDateTime offsetDateTime) {
+        return Timestamp.valueOf(offsetDateTime.atZoneSameInstant(easternZone).toLocalDateTime());
+    }
+
+    public static Timestamp convertOffsetDateTimeToTimeStamp(LocalDate localDate) {
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIN);
+        ZoneOffset zoneOffSet = easternZone.getRules().getOffset(localDateTime);
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, zoneOffSet);
+        return Timestamp.valueOf(offsetDateTime.atZoneSameInstant(easternZone).toLocalDateTime());
     }
 }

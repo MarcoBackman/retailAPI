@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * This class handles business cases for calculating and delivering reward point features
+ */
 @Service
 @Log4j2
 public class RewardService implements IDateTime {
@@ -36,6 +39,13 @@ public class RewardService implements IDateTime {
         this.transactionDAO = transactionDAO;
     }
 
+    /**
+     *   Calculates reward points <br/>
+     *   Reward logic <br/>
+     *   1. if transaction $0 ~ $50 - 0 point <br/>
+     *   2. if transaction $50 ~ $100 - 1 point for each extra dollars <br/>
+     *   3. if transaction more than $100 - 50 initial points and 2 points for each extra dollars over $100 <br/>
+     */
     protected BigDecimal calculatePoints(Marker mk, BigDecimal tranAmount) {
         if (tranAmount.compareTo(LOW_BOUND_DOLLAR_SPENT) <= 0) {
             log.debug(mk, "Skippling point calculation result");
@@ -52,32 +62,37 @@ public class RewardService implements IDateTime {
         }
     }
 
-    //Get a customers recent rewards (3 months)
+    /**
+     *   Get a customers recent rewards (3 months)
+     */
     public RewardData getCustomerRewards(Marker mk, int customerId, RewardData rewardData) {
         log.info(mk, "Processing customer rewards for customerId={}", customerId);
 
-        transactionDAO.getLastMonthTransactionsByCustomerId(customerId, getCurrentLocalDate(), Month.LAST_MONTH)
+        transactionDAO.getLastMonthTransactionsByCustomerId(mk, customerId, getCurrentLocalDate(), Month.LAST_MONTH)
                 .map(Transaction::getTranAmount)
                 .forEach(tranAmount -> {
                     BigDecimal calculatedPoints = calculatePoints(mk, tranAmount);
+                    log.debug(mk, "Calculated point for tranAmount={} is : {}", tranAmount, calculatedPoints);
                     rewardData.addPreviousMonthReward(calculatedPoints);
                 });
-        transactionDAO.getLastMonthTransactionsByCustomerId(customerId, getCurrentLocalDate(), Month.LAST_SECOND_MONTH)
+        transactionDAO.getLastMonthTransactionsByCustomerId(mk, customerId, getCurrentLocalDate(), Month.LAST_SECOND_MONTH)
                 .map(Transaction::getTranAmount)
                 .forEach(tranAmount -> {
                     BigDecimal calculatedPoints = calculatePoints(mk, tranAmount);
+                    log.debug(mk, "Calculated point for tranAmount={} is : {}", tranAmount, calculatedPoints);
                     rewardData.addLastSecondMonthReward(calculatedPoints);
                 });
-        transactionDAO.getLastMonthTransactionsByCustomerId(customerId, getCurrentLocalDate(), Month.LAST_THIRD_MONTH)
+        transactionDAO.getLastMonthTransactionsByCustomerId(mk, customerId, getCurrentLocalDate(), Month.LAST_THIRD_MONTH)
                 .map(Transaction::getTranAmount)
                 .forEach(tranAmount -> {
                     BigDecimal calculatedPoints = calculatePoints(mk, tranAmount);
+                    log.debug(mk, "Calculated point for tranAmount={} is : {}", tranAmount, calculatedPoints);
                     rewardData.addLastThirdMonthReward(calculatedPoints);
                 });
 
         rewardData.setLastThreeMonthsTotalRewards();
 
-        log.info(mk, "Processing Done.");
+        log.info(mk, "Processing Done. Customers reward={}", rewardData);
 
         return rewardData;
     }

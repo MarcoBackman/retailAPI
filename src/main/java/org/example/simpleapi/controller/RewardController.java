@@ -9,10 +9,11 @@ import org.example.simpleapi.service.RewardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+/**
+ * Controller for reward data request and response
+ */
 @RestController
-@RequestMapping("/reward")
+@RequestMapping("api/v2/reward")
 @Log4j2
 public class RewardController {
     private final Marker mk = MarkerManager.getMarker("REWARD_CONTROLLER");
@@ -31,13 +32,5 @@ public class RewardController {
                 new RewardData(customerId)
         );
         return ResponseEntity.ok(reward);
-    }
-
-    //Todo: Add implementation. This is not a requirement but good to have
-    @Operation(description = "Retrieve all customer's reward records")
-    @GetMapping("/all")
-    public ResponseEntity<List<RewardData>> getRewardPointsAllCustomers() {
-        List<RewardData> rewards = null;
-        return ResponseEntity.ok(rewards);
     }
 }

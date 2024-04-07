@@ -27,8 +27,15 @@ link: (http://localhost:8081/swagger-ui/index.html)
 
 Main feature endpoint will be `/reward/{customerId}`
 
-![Swagger UI](./Capture.PNG)
+![Swagger UI](./Capture3.PNG)
 
+
+Or request via curl command:
+```
+curl -X 'GET' \
+'http://localhost:8081/api/v2/reward/1' \
+-H 'accept: */*'
+```
 
 # Unit test instructions
 

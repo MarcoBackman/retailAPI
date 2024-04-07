@@ -7,6 +7,6 @@ import org.apache.logging.log4j.Marker;
  */
 public interface RecordDAO<T> {
     T getRecordById(Marker mk, int id);
-    int addRecord(Marker mk, T customer);
+    long addRecord(Marker mk, T customer);
     int updateRecord(Marker mk, T customer);
 }

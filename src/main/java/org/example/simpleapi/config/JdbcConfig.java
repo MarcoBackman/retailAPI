@@ -49,6 +49,10 @@ public class JdbcConfig {
         return new JdbcTemplate(jdbcDataSource());
     }
 
+    /**
+     * Alternative querying tool for PreparedStatement
+     * @return
+     */
     @Bean
     @Primary
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {

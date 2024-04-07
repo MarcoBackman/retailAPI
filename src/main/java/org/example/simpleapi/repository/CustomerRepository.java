@@ -23,7 +23,8 @@ public class CustomerRepository {
         }
         return result;
     }
-    public int addCustomer(Marker mk, Customer customer) {
+
+    public long addCustomer(Marker mk, Customer customer) {
         return customerDAO.addRecord(mk, customer);
     }
 

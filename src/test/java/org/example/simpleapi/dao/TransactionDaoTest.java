@@ -89,8 +89,7 @@ public class TransactionDaoTest {
                 .tranAmount(new BigDecimal("54.234"))
                 .customerId(FIRST_TEST_CUSTOMER_ID)
                 .build();
-        int result = transactionDAO.addRecord(mk, stubTrans);
-        assertThat(result).isEqualByComparingTo(1);
+        transactionDAO.addRecord(mk, stubTrans);
 
         Transaction transaction = transactionDAO.getRecordByCustomerId(mk, 1234).get(0);
         assertThat(transaction.getTransactionId()).isNotNull();
@@ -110,10 +109,8 @@ public class TransactionDaoTest {
                 .tranAmount(new BigDecimal("54.234"))
                 .customerId(FIRST_TEST_CUSTOMER_ID)
                 .build();
-        int result = transactionDAO.addRecord(mk, firstStubTrans);
-        assertThat(result).isEqualByComparingTo(1);
-        result = transactionDAO.addRecord(mk, secondStubTrans);
-        assertThat(result).isEqualByComparingTo(1);
+        transactionDAO.addRecord(mk, firstStubTrans);
+        transactionDAO.addRecord(mk, secondStubTrans);
 
         List<Transaction> transaction = transactionDAO.getRecordByCustomerId(mk, FIRST_TEST_CUSTOMER_ID);
 
@@ -204,7 +201,7 @@ public class TransactionDaoTest {
         assertThat(totalTransactions.size()).isEqualTo(3);
 
         List<Transaction> transactions
-                = transactionDAO.getLastMonthTransactionsByCustomerId(FIRST_TEST_CUSTOMER_ID, today, Month.LAST_MONTH).toList();
+                = transactionDAO.getLastMonthTransactionsByCustomerId(mk, FIRST_TEST_CUSTOMER_ID, today, Month.LAST_MONTH).toList();
 
         assertThat(transactions.size()).isEqualTo(1);
     }
@@ -214,12 +211,13 @@ public class TransactionDaoTest {
         addCurrentMonthTransactions();
         addLastMonthTransactions();
         addTwoMonthsBeforeTransactions();
+        addOutdatedTransactions();
 
         List<Transaction> totalTransactions = transactionDAO.getRecordByCustomerId(mk, FIRST_TEST_CUSTOMER_ID);
-        assertThat(totalTransactions.size()).isEqualTo(4);
+        assertThat(totalTransactions.size()).isEqualTo(5);
 
         List<Transaction> transactions
-                = transactionDAO.getLastMonthTransactionsByCustomerId(FIRST_TEST_CUSTOMER_ID, today, Month.LAST_SECOND_MONTH).toList();
+                = transactionDAO.getLastMonthTransactionsByCustomerId(mk, FIRST_TEST_CUSTOMER_ID, today, Month.LAST_SECOND_MONTH).toList();
 
         assertThat(transactions.size()).isEqualTo(2);
     }
@@ -230,13 +228,45 @@ public class TransactionDaoTest {
         addLastMonthTransactions();
         addTwoMonthsBeforeTransactions();
         addThreeMonthsBeforeTransactions();
+        addOutdatedTransactions();
 
         List<Transaction> totalTransactions = transactionDAO.getRecordByCustomerId(mk, FIRST_TEST_CUSTOMER_ID);
-        assertThat(totalTransactions.size()).isEqualTo(5);
+        assertThat(totalTransactions.size()).isEqualTo(6);
 
         List<Transaction> transactions
-                = transactionDAO.getLastMonthTransactionsByCustomerId(FIRST_TEST_CUSTOMER_ID, today, Month.LAST_THIRD_MONTH).toList();
+                = transactionDAO.getLastMonthTransactionsByCustomerId(mk, FIRST_TEST_CUSTOMER_ID, today, Month.LAST_THIRD_MONTH).toList();
 
         assertThat(transactions.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void getTransactionsByPrimaryKey() {
+        addCurrentMonthTransactions();
+        addLastMonthTransactions();
+        addTwoMonthsBeforeTransactions();
+        addThreeMonthsBeforeTransactions();
+        addOutdatedTransactions();
+
+        Transaction totalTransactions = transactionDAO.getRecordById(mk, 1);
+        assertThat(totalTransactions).isNotNull();
+        assertThat(totalTransactions.getTransactionId()).isEqualTo(1);
+        assertThat(totalTransactions.getCustomerId()).isEqualTo(FIRST_TEST_CUSTOMER_ID);
+        assertThat(totalTransactions.getTranAmount()).isEqualByComparingTo(new BigDecimal("54.234"));
+    }
+
+    @Test
+    public void transactionAddition_duplicatePrimaryKeyTest() {
+        addCurrentMonthTransactions();
+
+        Transaction transaction = Transaction.builder()
+                .customerId(1)
+                .tranWhen(OffsetDateTime.now())
+                .tranAmount(new BigDecimal("234.2"))
+                .build();
+        long generatedKey = transactionDAO.addRecord(mk, transaction);
+        assertThat(generatedKey).isNotEqualTo(-1);
+
+        transaction = transactionDAO.getRecordById(mk, (int)generatedKey);
+        assertThat(transaction).isNotNull();
     }
 }

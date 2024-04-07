@@ -127,11 +127,11 @@ public class RewardServiceTest {
         RewardData rewardDataSpy = spy(new RewardData(TEST_CUSTOMER_ID));
 
         doReturn(lastMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
         doReturn(lastSecondMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
         doReturn(lastThirdMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
 
         rewardServiceSpy.getCustomerRewards(mk, TEST_CUSTOMER_ID, rewardDataSpy);
 
@@ -160,11 +160,11 @@ public class RewardServiceTest {
         RewardData rewardDataSpy = spy(new RewardData(TEST_CUSTOMER_ID));
 
         doReturn(lastMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
         doReturn(lastSecondMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
         doReturn(lastThirdMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
 
         rewardServiceSpy.getCustomerRewards(mk, TEST_CUSTOMER_ID, rewardDataSpy);
 
@@ -191,11 +191,11 @@ public class RewardServiceTest {
         RewardData rewardDataSpy = spy(new RewardData(TEST_CUSTOMER_ID));
 
         doReturn(lastMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_MONTH));
         doReturn(lastSecondMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_SECOND_MONTH));
         doReturn(lastThirdMonthTransactionStream).when(transactionDAO)
-                .getLastMonthTransactionsByCustomerId(eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
+                .getLastMonthTransactionsByCustomerId(eq(mk), eq(TEST_CUSTOMER_ID), any(), eq(Month.LAST_THIRD_MONTH));
 
         rewardServiceSpy.getCustomerRewards(mk, TEST_CUSTOMER_ID, rewardDataSpy);
 

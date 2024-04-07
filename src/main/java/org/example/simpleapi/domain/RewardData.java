@@ -1,13 +1,15 @@
 package org.example.simpleapi.domain;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
+import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
 
+/**
+ * RewardData class object stores all crucial reward information
+ */
 @Getter
+@Log4j2
 public class RewardData {
     private final int customerId;
     private BigDecimal previousMonthReward = BigDecimal.ZERO;
@@ -32,8 +34,11 @@ public class RewardData {
     }
 
     public void setLastThreeMonthsTotalRewards() {
-        totalThreeMonthsRewards = totalThreeMonthsRewards.add(previousMonthReward
-                .add(lastSecondMonthReward)
-                .add(lastThirdMonthReward));
+        log.debug("Added all three months points. previousMonthReward={}," +
+                        " lastSecondMonthReward={}, lastThirdMonthReward={}",
+                previousMonthReward, lastSecondMonthReward, lastThirdMonthReward);
+        totalThreeMonthsRewards = totalThreeMonthsRewards.add(previousMonthReward);
+        totalThreeMonthsRewards = totalThreeMonthsRewards.add(lastSecondMonthReward);
+        totalThreeMonthsRewards = totalThreeMonthsRewards.add(lastThirdMonthReward);
     }
 }
